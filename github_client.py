@@ -29,7 +29,8 @@ def get_repo_stats(repo_name):
         "forks": repo.forks_count,
         "open_issues": repo.open_issues_count,
     }
-print("GitHub client initialized.")
+
+# print("GitHub client initialized.")
 def list_pull_requests(repo_name):
     """List open pull requests in a repo"""
     repo = g.get_repo(repo_name)
