@@ -3,6 +3,9 @@ from review_pr import comment_on_pull_request
 from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content
 from pull_request_ops import create_pull_request
 from merge_pr import merge_pull_request
+from repo_inspect import list_branches
+from repo_inspect import list_recent_commits
+from repo_inspect import get_commit_diff
 
 # 🔁 Step 1: List all repos
 repos = list_user_repos()
@@ -19,6 +22,41 @@ for repo in repos:
     if user_prompt in repo.lower():
         matched_repo = repo
         break
+
+print(f"\n🌿 Branches in {matched_repo}:")
+branches = list_branches(matched_repo)
+if isinstance(branches, list):
+    for b in branches:
+        print(f"  - {b}")
+else:
+    print(branches)  # show error message if any
+
+print(f"\n📝 Latest Commits in {matched_repo}:")
+commits = list_recent_commits(matched_repo)
+if isinstance(commits, list):
+    for c in commits:
+        print(f"  - {c}")
+else:
+    print(commits)  # error message
+
+# Ask if user wants commit details
+view_diff = input("\nDo you want to view a commit's file changes? (yes/no): ").lower()
+if view_diff == "yes":
+    commit_sha = input("Enter the full or short SHA of the commit: ").strip()
+    summary = get_commit_diff(matched_repo, commit_sha)
+    
+    if isinstance(summary, str):
+        print(summary)  # error
+    else:
+        print(f"\n🔍 Commit Message: {summary['message']}")
+        print(f"👤 Author: {summary['author']} on {summary['date']}")
+        print(f"📧 Email: {summary['email']}")
+        print(f"🔗 GitHub: {summary['github_user']} ({summary['github_url']})")
+        print(f"📊 Stats — Additions: {summary['stats']['additions']}, Deletions: {summary['stats']['deletions']}, Total: {summary['stats']['total']}")
+        print("📝 Files Changed:")
+        for f in summary["files_changed"]:
+            print(f"  - {f['filename']} (+{f['additions']}/-{f['deletions']})")
+
 
 # ❌ No match
 if not matched_repo:
