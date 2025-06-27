@@ -6,6 +6,8 @@ from merge_pr import merge_pull_request
 from repo_inspect import list_branches
 from repo_inspect import list_recent_commits
 from repo_inspect import get_commit_diff
+from issues_client import list_issues
+from issues_client import list_issue_comments, add_issue_comment
 
 # 🔁 Step 1: List all repos
 repos = list_user_repos()
@@ -56,6 +58,53 @@ if view_diff == "yes":
         print("📝 Files Changed:")
         for f in summary["files_changed"]:
             print(f"  - {f['filename']} (+{f['additions']}/-{f['deletions']})")
+
+print(f"\n🐛 Open Issues in {matched_repo}:")
+open_issues = list_issues(matched_repo, state="open")
+if isinstance(open_issues, str):
+    print(open_issues)
+elif not open_issues:
+    print("No open issues.")
+else:
+    for issue in open_issues:
+        print(f"  - #{issue['number']}: {issue['title']} by {issue['creator']} at {issue['created_at']}")
+
+print(f"\n📦 Closed Issues in {matched_repo}:")
+closed_issues = list_issues(matched_repo, state="closed")
+if isinstance(closed_issues, str):
+    print(closed_issues)
+elif not closed_issues:
+    print("No closed issues.")
+else:
+    for issue in closed_issues:
+        print(f"  - #{issue['number']}: {issue['title']} by {issue['creator']} at {issue['created_at']}")
+
+# 🗣️ Ask user if they want to comment
+add_comment = input("\nDo you want to view or comment on an issue? (yes/no): ").lower()
+if add_comment == "yes":
+    try:
+        issue_number = int(input("Enter the issue number to work on: "))
+        
+        # Show existing comments
+        comments = list_issue_comments(matched_repo, issue_number)
+        if isinstance(comments, str):
+            print(comments)
+        elif not comments:
+            print("No comments yet.")
+        else:
+            print("\n🧾 Comments:")
+            for c in comments:
+                print(f"  - {c['user']} at {c['created_at']}:\n    {c['body']}\n")
+
+        # Ask if user wants to add one
+        add_new = input("Do you want to add a new comment to this issue? (yes/no): ").lower()
+        if add_new == "yes":
+            comment_body = input("Enter your comment: ")
+            result = add_issue_comment(matched_repo, issue_number, comment_body)
+            print(result)
+
+    except ValueError:
+        print("❌ Please enter a valid numeric issue number.")
 
 
 # ❌ No match
