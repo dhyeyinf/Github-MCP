@@ -64,3 +64,18 @@ def get_commit_diff(repo_name, commit_sha):
         return summary
     except Exception as e:
         return f"[ERROR] Failed to get commit diff: {str(e)}"
+def get_file_tree(repo_name, branch="main", path=""):
+    """Return the file/folder tree of a repo at a given branch and path"""
+    try:
+        repo = g.get_repo(repo_name)
+        contents = repo.get_contents(path, ref=branch)
+        file_list = []
+        for content in contents:
+            file_list.append({
+                "name": content.name,
+                "path": content.path,
+                "type": content.type  # 'file' or 'dir'
+            })
+        return file_list
+    except Exception as e:
+        return f"[ERROR] Could not fetch file tree: {str(e)}"

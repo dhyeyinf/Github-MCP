@@ -8,6 +8,7 @@ from repo_inspect import list_recent_commits
 from repo_inspect import get_commit_diff
 from issues_client import list_issues
 from issues_client import list_issue_comments, add_issue_comment
+from repo_inspect import get_file_tree
 
 # 🔁 Step 1: List all repos
 repos = list_user_repos()
@@ -33,6 +34,23 @@ if isinstance(branches, list):
 else:
     print(branches)  # show error message if any
 
+# 📂 Phase 5.2: Show file/folder tree
+view_tree = input("\nDo you want to view the file tree of a branch? (yes/no): ").lower()
+if view_tree == "yes":
+    selected_branch = input("Enter the branch name (default: main): ").strip() or "main"
+    tree = get_file_tree(matched_repo, branch=selected_branch)
+
+    if isinstance(tree, str):
+        print(tree)  # error
+    elif not tree:
+        print("📭 No files found.")
+    else:
+        print(f"\n📁 Top-level files/folders in {matched_repo}@{selected_branch}:")
+        for item in tree:
+            emoji = "📄" if item["type"] == "file" else "📁"
+            print(f"  {emoji} {item['path']}")
+    # 👀 Ask user if they want to view a specific file
+    
 print(f"\n📝 Latest Commits in {matched_repo}:")
 commits = list_recent_commits(matched_repo)
 if isinstance(commits, list):
