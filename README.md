@@ -1,7 +1,7 @@
 
-# 🚀 GitHub MCP: Model Configuration Protocol Client Toolkit
+# 🚀 GitHub MCP: Model Context Protocol Client Toolkit
 
-Welcome to **GitHub-MCP**, a robust and intelligent Python-based command-line interface (CLI) tool that brings the power of GitHub and the **Model Configuration Protocol (MCP)** together. This project bridges developer productivity and AI-driven automation by enabling seamless exploration, interaction, and modification of GitHub repositories using MCP standards.
+Welcome to **GitHub-MCP**, a robust and intelligent Python-based command-line interface (CLI) tool that brings the power of GitHub and the **Model Context Protocol (MCP)** together. This project bridges developer productivity and AI-driven automation by enabling seamless exploration, interaction, and modification of GitHub repositories using MCP standards.
 
 ---
 
