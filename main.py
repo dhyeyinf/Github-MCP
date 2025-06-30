@@ -1,6 +1,6 @@
 # main.py
 from review_pr import comment_on_pull_request
-from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content
+from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content, get_repo_topics, add_repo_topics, get_repo_license, update_repo_description
 from pull_request_ops import create_pull_request
 from merge_pr import merge_pull_request
 from repo_inspect import list_branches
@@ -59,6 +59,34 @@ if view_file == "yes":
         print(content[:1000])  # Show first 1000 characters
     else:
         print("❌ Could not retrieve file content.")
+
+# 📦 Phase 6: Topics and License Info
+print(f"\n🏷️ Current Topics for {matched_repo}:")
+topics = get_repo_topics(matched_repo)
+if isinstance(topics, str):
+    print(topics)
+else:
+    print(", ".join(topics) if topics else "No topics found.")
+
+add_topics = input("Do you want to add new topics? (yes/no): ").lower()
+if add_topics == "yes":
+    new_topics = input("Enter comma-separated topics to add: ").split(",")
+    new_topics = [t.strip() for t in new_topics if t.strip()]
+    if new_topics:
+        result = add_repo_topics(matched_repo, new_topics)
+        print(result)
+
+# 📜 License Info
+print(f"\n📜 License Info for {matched_repo}:")
+license_info = get_repo_license(matched_repo)
+print(license_info)
+
+# 📌 Phase 6.2: Set or update description
+desc_update = input(f"\n📝 Do you want to update the description for {matched_repo}? (yes/no): ").lower()
+if desc_update == "yes":
+    new_desc = input("Enter new description: ").strip()
+    result = update_repo_description(matched_repo, new_desc)
+    print(result)
 
     
 print(f"\n📝 Latest Commits in {matched_repo}:")
