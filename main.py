@@ -49,7 +49,17 @@ if view_tree == "yes":
         for item in tree:
             emoji = "📄" if item["type"] == "file" else "📁"
             print(f"  {emoji} {item['path']}")
-    # 👀 Ask user if they want to view a specific file
+# 📄 Ask to view a specific file's content
+view_file = input("\nDo you want to view a specific file's content? (yes/no): ").lower()
+if view_file == "yes":
+    file_path = input("Enter full file path (e.g., main.py or src/utils.py): ").strip()
+    content = get_file_content(matched_repo, file_path, branch=selected_branch)
+    if isinstance(content, str):
+        print(f"\n📄 Content of {file_path}:\n")
+        print(content[:1000])  # Show first 1000 characters
+    else:
+        print("❌ Could not retrieve file content.")
+
     
 print(f"\n📝 Latest Commits in {matched_repo}:")
 commits = list_recent_commits(matched_repo)

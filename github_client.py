@@ -1,6 +1,7 @@
 # github_client.py
 
 import os
+import base64
 from github import Github
 from dotenv import load_dotenv
 
@@ -36,11 +37,13 @@ def list_pull_requests(repo_name):
     repo = g.get_repo(repo_name)
     return [(pr.number, pr.title) for pr in repo.get_pulls(state='open')]
 
-def get_file_content(repo_name, path):
-    """Fetch a file from the repo"""
-    repo = g.get_repo(repo_name)
+def get_file_content(repo_full_name, path, branch=None):
     try:
-        file_content = repo.get_contents(path)
-        return file_content.decoded_content.decode()
+        repo = g.get_repo(repo_full_name)
+        if branch:
+            file_content = repo.get_contents(path, ref=branch)
+        else:
+            file_content = repo.get_contents(path)
+        return base64.b64decode(file_content.content).decode()
     except Exception as e:
-        return f"[ERROR] Could not fetch '{path}': {str(e)}"
+        return f"❌ Error fetching file content: {e}"
