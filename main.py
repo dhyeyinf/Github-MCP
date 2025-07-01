@@ -9,6 +9,8 @@ from repo_inspect import get_commit_diff
 from issues_client import list_issues
 from issues_client import list_issue_comments, add_issue_comment
 from repo_inspect import get_file_tree
+from mcp_exporter import generate_mcp_context
+import json
 
 # 🔁 Step 1: List all repos
 repos = list_user_repos()
@@ -241,3 +243,14 @@ else:
                     print(result)
             except ValueError:
                 print("❌ Please enter a valid numeric PR number.")
+
+# 📦 Phase 7: Generate MCP Context File
+generate = input("\nDo you want to generate an MCP context file (mcp.json)? (yes/no): ").lower()
+if generate == "yes":
+    mcp = generate_mcp_context(matched_repo)
+    if "error" in mcp:
+        print(f"[ERROR] Failed to generate MCP context: {mcp['error']}")
+    else:
+        with open("mcp.json", "w") as f:
+            json.dump(mcp, f, indent=4)
+        print("✅ MCP context file saved as mcp.json")
