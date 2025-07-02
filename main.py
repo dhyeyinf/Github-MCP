@@ -254,3 +254,10 @@ if generate == "yes":
         with open("mcp.json", "w") as f:
             json.dump(mcp, f, indent=4)
         print("✅ MCP context file saved as mcp.json")
+
+ask_llm = input("\n🧠 Do you want to ask a question using a real LLM via OpenRouter? (yes/no): ").strip().lower()
+if ask_llm == "yes":
+    from llm_agent import ask_llm
+    user_question = input("Ask your question (e.g., 'What are recent PRs?'): ")
+    response = ask_llm(user_question)
+    print(f"\n🤖 LLM Response:\n{response}")

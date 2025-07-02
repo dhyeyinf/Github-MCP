@@ -2,72 +2,58 @@
     "@context": "https://modelcontextprotocol.io/context/v1",
     "modelcontext": {
         "repository": {
-            "name": "dhyeyinf/optuna-examples",
-            "description": "Examples for https://github.com/optuna/optuna",
-            "url": "https://github.com/dhyeyinf/optuna-examples",
-            "stars": 0,
+            "name": "dhyeyinf/Github-MCP",
+            "description": "A powerful CLI tool to explore GitHub repository metadata including pull requests, issues, commits, branches, and file diffs using Model Configuration Protocol and PyGitHub.",
+            "url": "https://github.com/dhyeyinf/Github-MCP",
+            "stars": 1,
             "forks": 0,
-            "topics": [],
-            "created_at": "2025-06-27",
-            "updated_at": "2025-06-30"
+            "topics": [
+                "cli-tool",
+                "developer-tools",
+                "github-api",
+                "mcp",
+                "model-context-protocol"
+            ],
+            "created_at": "2025-06-24",
+            "updated_at": "2025-07-01"
         },
         "contributors": [
             {
-                "login": "toshihikoyanase",
-                "html_url": "https://github.com/toshihikoyanase",
-                "contributions": 187
-            },
-            {
-                "login": "nzw0301",
-                "html_url": "https://github.com/nzw0301",
-                "contributions": 160
-            },
-            {
-                "login": "sile",
-                "html_url": "https://github.com/sile",
-                "contributions": 120
-            },
-            {
-                "login": "Crissman",
-                "html_url": "https://github.com/Crissman",
-                "contributions": 99
-            },
-            {
-                "login": "hvy",
-                "html_url": "https://github.com/hvy",
-                "contributions": 99
+                "login": "dhyeyinf",
+                "html_url": "https://github.com/dhyeyinf",
+                "contributions": 5
             }
         ],
         "recent_commits": [
             {
-                "sha": "5345b3eb6bd32fdecb21d59beae043ee9313409d",
+                "sha": "1beb7d8c830459d66d3bb12b07bad56cbc24ad24",
                 "author": "Dhyey Findoriya",
-                "message": "Fix isort import order and add requirements.txt for Spark ask-and-tell example",
-                "date": "2025-06-27"
+                "message": "Phase 7 implementation(closed issues remaining)",
+                "date": "2025-07-01"
             },
             {
-                "sha": "d836b31817df3687c415116b2ed29db927e26011",
+                "sha": "a05914e783f33d528550b43362af3e3c824e46a9",
                 "author": "Dhyey Findoriya",
-                "message": "Add Spark example using ask-and-tell interface",
-                "date": "2025-06-27"
+                "message": "Phase 6,6.1 done",
+                "date": "2025-06-30"
             },
             {
-                "sha": "ea3271e1554b0cece92cfcc9be5f9485dafb94dd",
-                "author": "Shota Mizuno",
-                "message": "Add preferential optimization picture (#327)",
-                "date": "2025-06-06"
+                "sha": "ce710fcb367ab9c48431f1ead4852ef8ecec1f40",
+                "author": "Dhyey Findoriya",
+                "message": "Phase 5.3 done",
+                "date": "2025-06-30"
             },
             {
-                "sha": "14697194c0f1e8948a046c7d14ebf4fddcce514f",
-                "author": "Naoto Mizuno",
-                "message": "Merge pull request #326 from lan496/pre-commit-update",
-                "date": "2025-05-31"
+                "sha": "be36dc1a12a705832100a89d8776b9d58e4ac633",
+                "author": "Dhyey Findoriya",
+                "message": "Update README.md",
+                "date": "2025-06-28"
             },
             {
-                "sha": "862948f5cb18428623032d36ed412561199dfab6",
-                "author": "lan496",
-                "message": "pre-commit autoupdate",
-                "date": "2025-05-31"
+                "sha": "3b6b5bfd2aae44eee920393f7e7705e830642073",
+                "author": "Dhyey Findoriya",
+                "message": "Update README.md",
+                "date": "2025-06-28"
             }
         ],
         "open_issues": [],
