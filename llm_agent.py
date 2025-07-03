@@ -11,7 +11,7 @@ client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
 
-MODEL = "deepseek/deepseek-chat-v3-0324:free"
+MODEL = "openrouter/cypher-alpha:free"
 
 def load_context(path="mcp.json"):
     try:

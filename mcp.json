@@ -2,61 +2,123 @@
     "@context": "https://modelcontextprotocol.io/context/v1",
     "modelcontext": {
         "repository": {
-            "name": "dhyeyinf/Github-MCP",
-            "description": "A powerful CLI tool to explore GitHub repository metadata including pull requests, issues, commits, branches, and file diffs using Model Configuration Protocol and PyGitHub.",
-            "url": "https://github.com/dhyeyinf/Github-MCP",
-            "stars": 1,
+            "name": "dhyeyinf/Github-MCP-Testing",
+            "description": "hello, testing the mcp description update!!",
+            "url": "https://github.com/dhyeyinf/Github-MCP-Testing",
+            "stars": 0,
             "forks": 0,
             "topics": [
-                "cli-tool",
-                "developer-tools",
+                "automation",
                 "github-api",
                 "mcp",
-                "model-context-protocol"
+                "llm"
             ],
-            "created_at": "2025-06-24",
-            "updated_at": "2025-07-01"
+            "created_at": "2025-06-25",
+            "updated_at": "2025-07-02"
         },
         "contributors": [
             {
                 "login": "dhyeyinf",
                 "html_url": "https://github.com/dhyeyinf",
-                "contributions": 5
+                "contributions": 6
             }
         ],
         "recent_commits": [
             {
-                "sha": "1beb7d8c830459d66d3bb12b07bad56cbc24ad24",
+                "sha": "081184f21127812ae5cd10afd7393c84e3f6a312",
                 "author": "Dhyey Findoriya",
-                "message": "Phase 7 implementation(closed issues remaining)",
-                "date": "2025-07-01"
+                "message": "Merge pull request #1 from dhyeyinf/feature-review",
+                "date": "2025-06-25"
             },
             {
-                "sha": "a05914e783f33d528550b43362af3e3c824e46a9",
+                "sha": "ab68134a89438e8d2f53f51033adb45d2b80e441",
                 "author": "Dhyey Findoriya",
-                "message": "Phase 6,6.1 done",
-                "date": "2025-06-30"
+                "message": "Update test_module.py",
+                "date": "2025-06-25"
             },
             {
-                "sha": "ce710fcb367ab9c48431f1ead4852ef8ecec1f40",
-                "author": "Dhyey Findoriya",
-                "message": "Phase 5.3 done",
-                "date": "2025-06-30"
-            },
-            {
-                "sha": "be36dc1a12a705832100a89d8776b9d58e4ac633",
+                "sha": "f46bc1ffc845404fabd25c1a28e7e7fa0582a5b0",
                 "author": "Dhyey Findoriya",
                 "message": "Update README.md",
-                "date": "2025-06-28"
+                "date": "2025-06-25"
             },
             {
-                "sha": "3b6b5bfd2aae44eee920393f7e7705e830642073",
+                "sha": "6b29e3dd3806ac959df85e9568134ef1e674b97b",
                 "author": "Dhyey Findoriya",
-                "message": "Update README.md",
-                "date": "2025-06-28"
+                "message": "Create test_module.py",
+                "date": "2025-06-25"
+            },
+            {
+                "sha": "7c3e492b68387f355259b2c6bfe855908a0a93dc",
+                "author": "Dhyey Findoriya",
+                "message": "Create main.py",
+                "date": "2025-06-25"
             }
         ],
-        "open_issues": [],
+        "open_issues": [
+            {
+                "number": 13,
+                "title": "test 2 on llm api free",
+                "created_at": "2025-07-02",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 12,
+                "title": "last llm call",
+                "created_at": "2025-07-02",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 9,
+                "title": "1.2",
+                "created_at": "2025-06-30",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 2,
+                "title": "Testing phase1",
+                "created_at": "2025-06-27",
+                "user": "dhyeyinf"
+            }
+        ],
+        "closed_issues": [
+            {
+                "number": 14,
+                "title": "test1.txt final test",
+                "created_at": "2025-07-03",
+                "closed_at": "2025-07-03",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 11,
+                "title": "2.1",
+                "created_at": "2025-06-30",
+                "closed_at": "2025-06-30",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 10,
+                "title": "1.3",
+                "created_at": "2025-06-30",
+                "closed_at": "2025-06-30",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 8,
+                "title": "no test-1",
+                "created_at": "2025-06-30",
+                "closed_at": "2025-06-30",
+                "user": "dhyeyinf"
+            },
+            {
+                "number": 7,
+                "title": "final-2 test",
+                "created_at": "2025-06-30",
+                "closed_at": "2025-06-30",
+                "user": "dhyeyinf"
+            }
+        ],
+        "issue_comments": [],
         "open_pull_requests": []
     }
 }
