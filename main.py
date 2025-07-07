@@ -11,6 +11,7 @@ from issues_client import list_issue_comments, add_issue_comment
 from repo_inspect import get_file_tree
 from mcp_exporter import generate_mcp_context
 import json
+from nlp_executor import interpret_command, execute_actions
 
 # 🔁 Step 1: List all repos
 repos = list_user_repos()
@@ -261,3 +262,14 @@ if ask_llm == "yes":
     user_question = input("Ask your question (e.g., 'What are recent PRs?'): ")
     response = ask_llm(user_question)
     print(f"\n🤖 LLM Response:\n{response}")
+
+# 🤖 Phase 10: Natural Language Command Execution
+use_nlp = input("\n🧠 Do you want to perform actions using a natural language command? (yes/no): ").lower()
+if use_nlp == "yes":
+    command = input("🗣️ Enter your instruction (e.g., 'Create PR from dev to main and show commits'): ")
+    structured = interpret_command(command, matched_repo)
+    if "error" in structured:
+        print(f"\n❌ LLM Error: {structured['error']}")
+    else:
+        result = execute_actions(structured, matched_repo)
+        print(f"\n🤖 Result:\n{result}")
