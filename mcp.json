@@ -14,16 +14,22 @@
                 "llm"
             ],
             "created_at": "2025-06-25",
-            "updated_at": "2025-07-06"
+            "updated_at": "2025-07-12"
         },
         "contributors": [
             {
                 "login": "dhyeyinf",
                 "html_url": "https://github.com/dhyeyinf",
-                "contributions": 17
+                "contributions": 18
             }
         ],
         "recent_commits": [
+            {
+                "sha": "1b6f694f566685bba70d47dbfa7515c45a4f60af",
+                "author": "Dhyey Findoriya",
+                "message": "Update main.py",
+                "date": "2025-07-12"
+            },
             {
                 "sha": "44eccbf4b2e5c5ee44cdb932530df119e07b2e32",
                 "author": "Dhyey Findoriya",
@@ -47,15 +53,15 @@
                 "author": "Dhyey Findoriya",
                 "message": "Delete test_module.py",
                 "date": "2025-07-03"
-            },
-            {
-                "sha": "2937642165ad46c74086b4df4f3d495bf65bc4c3",
-                "author": "Dhyey Findoriya",
-                "message": "Create test.txt",
-                "date": "2025-07-03"
             }
         ],
         "open_issues": [
+            {
+                "number": 20,
+                "title": "last probably",
+                "created_at": "2025-07-08",
+                "user": "dhyeyinf"
+            },
             {
                 "number": 17,
                 "title": "phase 8",
@@ -69,12 +75,6 @@
                 "user": "dhyeyinf"
             },
             {
-                "number": 12,
-                "title": "last llm call",
-                "created_at": "2025-07-02",
-                "user": "dhyeyinf"
-            },
-            {
                 "number": 2,
                 "title": "Testing phase1",
                 "created_at": "2025-06-27",
@@ -82,6 +82,13 @@
             }
         ],
         "closed_issues": [
+            {
+                "number": 21,
+                "title": "1.2.3",
+                "created_at": "2025-07-14",
+                "closed_at": "2025-07-14",
+                "user": "dhyeyinf"
+            },
             {
                 "number": 19,
                 "title": "Create test3.txt",
@@ -106,13 +113,6 @@
             {
                 "number": 15,
                 "title": "Conflict pr",
-                "created_at": "2025-07-03",
-                "closed_at": "2025-07-03",
-                "user": "dhyeyinf"
-            },
-            {
-                "number": 14,
-                "title": "test1.txt final test",
                 "created_at": "2025-07-03",
                 "closed_at": "2025-07-03",
                 "user": "dhyeyinf"

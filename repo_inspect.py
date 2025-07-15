@@ -17,21 +17,22 @@ def list_branches(repo_name):
     except Exception as e:
         return f"[ERROR] Failed to fetch branches: {str(e)}"
 
-def list_recent_commits(repo_name, count=5):
-    """List the latest commits in the given repo"""
+def list_recent_commits(repo_name):
+    """List recent commits in a repository"""
     try:
         repo = g.get_repo(repo_name)
-        commits = repo.get_commits()
-        result = []
-        for commit in commits[:count]:
-            sha = commit.sha[:7]
-            msg = commit.commit.message.split("\n")[0]
-            author = commit.commit.author.name
-            date = commit.commit.author.date.strftime('%Y-%m-%d %H:%M')
-            result.append(f"{sha} | {author} | {date} | {msg}")
-        return result
+        commits = repo.get_commits()[:7]  # Limit to 7 recent commits
+        commit_list = []
+        for commit in commits:
+            commit_list.append({
+                "sha": commit.sha,
+                "author": commit.commit.author.name,
+                "date": commit.commit.author.date.strftime('%Y-%m-%d %H:%M'),
+                "message": commit.commit.message
+            })
+        return commit_list
     except Exception as e:
-        return f"[ERROR] Failed to fetch commits: {str(e)}"
+        return f"[ERROR] Failed to list commits: {str(e)}"
 
 
 def get_commit_diff(repo_name, commit_sha):

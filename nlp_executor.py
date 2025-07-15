@@ -1,80 +1,194 @@
-# nlp_executor.py
-
-import os
-import json
-import requests
-from repo_inspect import list_recent_commits
+from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content
 from pull_request_ops import create_pull_request
+from merge_pr import merge_pull_request
+from review_pr import comment_on_pull_request
+from issues_client import create_issue, add_issue_comment, list_issues, list_issue_comments
+from repo_inspect import list_branches, list_recent_commits, get_file_tree, get_commit_diff
+import re
+from datetime import datetime
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_MODEL = "deepseek/deepseek-chat-v3-0324:free"
-
-
-def interpret_command(prompt: str, repo_name: str) -> dict:
+def mock_llm(prompt, repo_name):
     """
-    Sends the natural language prompt to OpenRouter and receives structured actions.
+    Mock LLM to parse natural language commands and map to GitHub actions.
+    Returns a structured JSON with intent and parameters.
     """
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
+    prompt = prompt.lower().strip()
+    
+    # Patterns for common commands
+    patterns = [
+        {
+            "pattern": r"create (?:a )?(?:new )?pull request from (\w+) to (\w+)(?: with title ['\"](.+)['\"])?(?: and description ['\"](.+)['\"])?",
+            "intent": "create_pr",
+            "params": ["head", "base", "title", "body"]
+        },
+        {
+            "pattern": r"merge pull request #?(\d+)(?: with message ['\"](.+)['\"])?",
+            "intent": "merge_pr",
+            "params": ["pr_number", "message"]
+        },
+        {
+            "pattern": r"comment on pull request #?(\d+) with ['\"](.+)['\"]",
+            "intent": "comment_pr",
+            "params": ["pr_number", "comment"]
+        },
+        {
+            "pattern": r"create (?:a )?(?:new )?issue(?: with title ['\"](.+)['\"])?(?: and body ['\"](.+)['\"])?",
+            "intent": "create_issue",
+            "params": ["title", "body"]
+        },
+        {
+            "pattern": r"comment on issue #?(\d+) with ['\"](.+)['\"]",
+            "intent": "comment_issue",
+            "params": ["issue_number", "comment"]
+        },
+        {
+            "pattern": r"list (open|closed)? ?(issues|pull requests|branches|commits)(?: of this repositor(?:y|ies))?",
+            "intent": "list_items",
+            "params": ["state", "item_type"]
+        },
+        {
+            "pattern": r"view file ['\"](.+)['\"](?: on branch (\w+))?",
+            "intent": "view_file",
+            "params": ["file_path", "branch"]
+        },
+        {
+            "pattern": r"view commit #?(\w+)",
+            "intent": "view_commit",
+            "params": ["commit_sha"]
+        },
+        {
+            "pattern": r"list comments on issue #?(\d+)",
+            "intent": "list_issue_comments",
+            "params": ["issue_number"]
+        },
+    ]
+    
+    for p in patterns:
+        match = re.match(p["pattern"], prompt)
+        if match:
+            result = {"intent": p["intent"], "params": {}}
+            for param, value in zip(p["params"], match.groups()):
+                if value:
+                    result["params"][param] = value
+            # Set defaults for optional params
+            if p["intent"] == "create_pr" and "title" not in result["params"]:
+                result["params"]["title"] = f"PR from {result['params']['head']} to {result['params']['base']}"
+                result["params"]["body"] = result["params"].get("body", "")
+            if p["intent"] == "merge_pr" and "message" not in result["params"]:
+                result["params"]["message"] = "Merged via MCP"
+            if p["intent"] == "create_issue" and "title" not in result["params"]:
+                result["params"]["title"] = f"Issue created on {datetime.now().strftime('%Y-%m-%d')}"
+                result["params"]["body"] = result["params"].get("body", "")
+            if p["intent"] == "view_file" and "branch" not in result["params"]:
+                result["params"]["branch"] = "main"
+            if p["intent"] == "list_items" and "state" not in result["params"]:
+                result["params"]["state"] = "open"
+            return result
+    
+    return {"error": f"Could not understand command: {prompt}"}
 
-    data = {
-        "model": OPENROUTER_MODEL,
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    f"You are a GitHub assistant for the repository '{repo_name}'. "
-                    "Interpret the user's natural language request and return a valid JSON list of actions "
-                    "you want to perform. Only respond in JSON. Each action can be:\n"
-                    "- {\"action\": \"create_pr\", \"base\": \"main\", \"head\": \"dev\", \"title\": \"My PR Title\", \"body\": \"Optional body\"}\n"
-                    "- {\"action\": \"list_commits\", \"count\": 3}\n"
-                    "You must only respond with the JSON array of actions. Do not add explanations."
-                )
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    }
-
-    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
-
-    if response.status_code == 200:
-        try:
-            raw = response.json()["choices"][0]["message"]["content"]
-            return json.loads(raw)
-        except Exception as e:
-            return {"error": f"Failed to parse LLM response: {str(e)}"}
-    else:
-        return {"error": f"LLM failed: {response.text}"}
-
-
-def execute_actions(actions: list, repo_name: str) -> str:
+def interpret_command(command, repo_name):
     """
-    Executes the interpreted list of actions on the GitHub repo.
+    Parse natural language command using the mock LLM.
+    Returns structured JSON with intent and parameters.
     """
-    output = []
-    for action in actions:
-        try:
-            if action["action"] == "create_pr":
-                base = action["base"]
-                head = action["head"]
-                title = action["title"]
-                body = action.get("body", "")
-                result = create_pull_request(repo_name, base, head, title, body)
-                output.append(f"🔀 Pull Request: {result}")
+    return mock_llm(command, repo_name)
 
-            elif action["action"] == "list_commits":
-                count = action.get("count", 5)
-                commits = list_recent_commits(repo_name, count)
-                output.append("📜 Recent Commits:\n" + "\n".join(commits))
-
+def execute_actions(structured, repo_name):
+    """
+    Execute GitHub actions based on parsed intent and parameters.
+    Returns a dictionary with 'message' and optional 'data' or 'error'.
+    """
+    intent = structured.get("intent")
+    params = structured.get("params", {})
+    
+    try:
+        if intent == "create_pr":
+            result = create_pull_request(
+                repo_name,
+                params["base"],
+                params["head"],
+                params["title"],
+                params.get("body", "")
+            )
+            return {"message": result.get("message", "Pull request created"), "data": result}
+        
+        elif intent == "merge_pr":
+            result = merge_pull_request(
+                repo_name,
+                int(params["pr_number"]),
+                params["message"]
+            )
+            return {"message": result.get("message", "Pull request merged"), "data": result}
+        
+        elif intent == "comment_pr":
+            result = comment_on_pull_request(
+                repo_name,
+                int(params["pr_number"]),
+                params["comment"]
+            )
+            return {"message": result.get("message", "Comment added to PR"), "data": result}
+        
+        elif intent == "create_issue":
+            result = create_issue(
+                repo_name,
+                params["title"],
+                params.get("body", "")
+            )
+            return {"message": result.get("message", "Issue created"), "data": result}
+        
+        elif intent == "comment_issue":
+            result = add_issue_comment(
+                repo_name,
+                int(params["issue_number"]),
+                params["comment"]
+            )
+            return {"message": result.get("message", "Comment added to issue"), "data": result}
+        
+        elif intent == "list_items":
+            item_type = params["item_type"]
+            state = params.get("state", "open")
+            
+            if item_type == "issues":
+                data = list_issues(repo_name, state=state)
+                return {"message": f"Listed {state} issues", "data": data}
+            elif item_type == "pull requests":
+                data = list_pull_requests(repo_name)
+                return {"message": "Listed pull requests", "data": data}
+            elif item_type == "branches":
+                data = list_branches(repo_name)
+                return {"message": "Listed branches", "data": data}
+            elif item_type == "commits":
+                data = list_recent_commits(repo_name)
+                return {"message": "Listed recent commits", "data": data}
+        
+        elif intent == "view_file":
+            content = get_file_content(
+                repo_name,
+                params["file_path"],
+                branch=params["branch"]
+            )
+            if isinstance(content, str):
+                return {"message": "File content retrieved", "data": {"content": content[:1000]}}
             else:
-                output.append(f"⚠️ Unknown action: {action['action']}")
-        except Exception as e:
-            output.append(f"❌ Error executing action: {str(e)}")
-
-    return "\n".join(output)
+                return {"error": "Could not retrieve file content"}
+        
+        elif intent == "view_commit":
+            summary = get_commit_diff(repo_name, params["commit_sha"])
+            if isinstance(summary, str):
+                return {"error": summary}
+            else:
+                return {"message": "Commit details retrieved", "data": summary}
+        
+        elif intent == "list_issue_comments":
+            comments = list_issue_comments(repo_name, int(params["issue_number"]))
+            if isinstance(comments, str):
+                return {"error": comments}
+            else:
+                return {"message": f"Comments for issue #{params['issue_number']}", "data": comments}
+        
+        else:
+            return {"error": f"Unknown intent: {intent}"}
+    
+    except Exception as e:
+        return {"error": f"Action failed: {str(e)}"}

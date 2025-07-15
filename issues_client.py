@@ -49,3 +49,17 @@ def add_issue_comment(repo_name, issue_number, comment_body):
         return "✅ Comment added successfully."
     except Exception as e:
         return f"[ERROR] Failed to add comment: {str(e)}"
+
+def create_issue(repo_name, title, body=""):
+    """Create a new issue in the specified repository"""
+    try:
+        repo = g.get_repo(repo_name)
+        issue = repo.create_issue(title=title, body=body)
+        return {
+            "message": f"✅ Issue #{issue.number} created successfully.",
+            "number": issue.number,
+            "title": issue.title,
+            "created_at": issue.created_at.strftime('%Y-%m-%d %H:%M')
+        }
+    except Exception as e:
+        return {"error": f"[ERROR] Failed to create issue: {str(e)}"}
