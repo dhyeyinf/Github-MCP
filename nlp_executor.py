@@ -1,4 +1,4 @@
-from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content
+from github_client import list_user_repos, get_repo_stats, list_pull_requests, get_file_content, get_repo_summary
 from pull_request_ops import create_pull_request
 from merge_pr import merge_pull_request
 from review_pr import comment_on_pull_request
@@ -18,6 +18,11 @@ def mock_llm(prompt, repo_name):
     patterns = [
         {
             "pattern": r"create (?:a )?(?:new )?pull request from (\w+) to (\w+)(?: with title ['\"](.+)['\"])?(?: and description ['\"](.+)['\"])?",
+            "intent": "create_pr",
+            "params": ["head", "base", "title", "body"]
+        },
+        {
+            "pattern": r"create (?:a )?(?:new )?pull request in this repo",
             "intent": "create_pr",
             "params": ["head", "base", "title", "body"]
         },
@@ -61,38 +66,61 @@ def mock_llm(prompt, repo_name):
             "intent": "list_issue_comments",
             "params": ["issue_number"]
         },
+        {
+            "pattern": r"(?:give me a )?summary of (?:this |the )?repo(?:sitory)?",
+            "intent": "repo_summary",
+            "params": []
+        },
     ]
     
     for p in patterns:
         match = re.match(p["pattern"], prompt)
         if match:
             result = {"intent": p["intent"], "params": {}}
-            for param, value in zip(p["params"], match.groups()):
-                if value:
-                    result["params"][param] = value
-            # Set defaults for optional params
-            if p["intent"] == "create_pr" and "title" not in result["params"]:
-                result["params"]["title"] = f"PR from {result['params']['head']} to {result['params']['base']}"
-                result["params"]["body"] = result["params"].get("body", "")
-            if p["intent"] == "merge_pr" and "message" not in result["params"]:
-                result["params"]["message"] = "Merged via MCP"
-            if p["intent"] == "create_issue" and "title" not in result["params"]:
-                result["params"]["title"] = f"Issue created on {datetime.now().strftime('%Y-%m-%d')}"
-                result["params"]["body"] = result["params"].get("body", "")
-            if p["intent"] == "view_file" and "branch" not in result["params"]:
-                result["params"]["branch"] = "main"
-            if p["intent"] == "list_items" and "state" not in result["params"]:
-                result["params"]["state"] = "open"
+            if p["intent"] == "create_pr" and len(match.groups()) == 0:
+                # Default values for generic PR creation
+                result["params"] = {
+                    "head": "feature",  # Default head branch
+                    "base": "main",     # Default base branch
+                    "title": f"PR for {repo_name} on {datetime.now().strftime('%Y-%m-%d')}",
+                    "body": ""
+                }
+            else:
+                for param, value in zip(p["params"], match.groups()):
+                    if value:
+                        result["params"][param] = value
+                # Set defaults for optional params
+                if p["intent"] == "create_pr" and "title" not in result["params"]:
+                    result["params"]["title"] = f"PR from {result['params']['head']} to {result['params']['base']}"
+                    result["params"]["body"] = result["params"].get("body", "")
+                if p["intent"] == "merge_pr" and "message" not in result["params"]:
+                    result["params"]["message"] = "Merged via MCP"
+                if p["intent"] == "create_issue" and "title" not in result["params"]:
+                    result["params"]["title"] = f"Issue created on {datetime.now().strftime('%Y-%m-%d')}"
+                    result["params"]["body"] = result["params"].get("body", "")
+                if p["intent"] == "view_file" and "branch" not in result["params"]:
+                    result["params"]["branch"] = "main"
+                if p["intent"] == "list_items" and "state" not in result["params"]:
+                    result["params"]["state"] = "open"
             return result
     
     return {"error": f"Could not understand command: {prompt}"}
 
 def interpret_command(command, repo_name):
     """
-    Parse natural language command using the mock LLM.
+    Parse natural language command using the mock LLM or OpenRouter LLM.
     Returns structured JSON with intent and parameters.
     """
-    return mock_llm(command, repo_name)
+    try:
+        from llm_agent import ask_llm
+        response = ask_llm(command, repo_name)
+        # Expect response to be a JSON string with intent and params
+        import json
+        structured = json.loads(response)
+        return structured
+    except Exception as e:
+        # Fallback to mock LLM if OpenRouter fails
+        return mock_llm(command, repo_name)
 
 def execute_actions(structured, repo_name):
     """
@@ -104,6 +132,14 @@ def execute_actions(structured, repo_name):
     
     try:
         if intent == "create_pr":
+            # Validate branches exist
+            branches = list_branches(repo_name)
+            if isinstance(branches, str):
+                return {"error": branches}
+            if params["head"] not in branches:
+                return {"error": f"Head branch '{params['head']}' does not exist. Available branches: {', '.join(branches)}"}
+            if params["base"] not in branches:
+                return {"error": f"Base branch '{params['base']}' does not exist. Available branches: {', '.join(branches)}"}
             result = create_pull_request(
                 repo_name,
                 params["base"],
@@ -186,6 +222,13 @@ def execute_actions(structured, repo_name):
                 return {"error": comments}
             else:
                 return {"message": f"Comments for issue #{params['issue_number']}", "data": comments}
+        
+        elif intent == "repo_summary":
+            summary = get_repo_summary(repo_name)
+            if isinstance(summary, str):
+                return {"error": summary}
+            else:
+                return {"message": "Repository summary retrieved", "data": summary}
         
         else:
             return {"error": f"Unknown intent: {intent}"}

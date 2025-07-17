@@ -91,3 +91,31 @@ def update_repo_description(repo_full_name, new_description):
         return f"✅ Description updated to: {new_description}"
     else:
         return f"❌ Failed to update description: {response.json().get('message', 'Unknown error')}"
+
+def get_repo_summary(repo_name):
+    """
+    Generate a summary of the repository including stats, topics, and recent activity.
+    """
+    try:
+        repo = g.get_repo(repo_name)
+        stats = get_repo_stats(repo_name)
+        topics = repo.get_topics()
+        open_issues = len([i for i in repo.get_issues(state="open") if i.pull_request is None])
+        open_prs = len(list(repo.get_pulls(state="open")))
+        recent_commits = len(list(repo.get_commits()[:5]))
+        
+        summary = {
+            "name": stats.get("name", repo_name),
+            "description": stats.get("description", "No description available"),
+            "stars": stats.get("stars", 0),
+            "forks": stats.get("forks", 0),
+            "open_issues": open_issues,
+            "open_prs": open_prs,
+            "recent_commits": recent_commits,
+            "topics": topics if topics else ["None"],
+            "created_at": repo.created_at.strftime('%Y-%m-%d'),
+            "last_updated": repo.updated_at.strftime('%Y-%m-%d')
+        }
+        return summary
+    except Exception as e:
+        return f"[ERROR] Failed to generate repo summary: {str(e)}"

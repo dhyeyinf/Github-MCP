@@ -1,7 +1,7 @@
 import streamlit as st
 from github_client import (
     list_user_repos, get_repo_stats, list_pull_requests, get_file_content,
-    get_repo_topics, add_repo_topics, get_repo_license, update_repo_description
+    get_repo_topics, add_repo_topics, get_repo_license, update_repo_description, get_repo_summary
 )
 from pull_request_ops import create_pull_request
 from merge_pr import merge_pull_request
@@ -11,7 +11,6 @@ from issues_client import list_issues, list_issue_comments, add_issue_comment, c
 from mcp_exporter import generate_mcp_context
 from nlp_executor import interpret_command, execute_actions
 import json
-import re
 from datetime import datetime
 
 # Streamlit App
@@ -52,7 +51,7 @@ if st.session_state.repo:
     
     with tab1:
         st.subheader("Natural Language Commands")
-        st.markdown("Enter commands like: 'Create a pull request from dev to main with title \"New Feature\"', 'List open issues', 'Comment on issue #5 with \"Looks good\"', or 'View commit abc123'.")
+        st.markdown("Enter commands like: 'Create a pull request from dev to main with title \"New Feature\"', 'List open issues', 'Comment on issue #5 with \"Looks good\"', 'View commit abc123', or 'Give me a summary of the repo'.")
         command = st.text_input("Enter your command:")
         if st.button("Execute Command"):
             if command:
@@ -67,7 +66,25 @@ if st.session_state.repo:
                         else:
                             st.success(result["message"])
                             if "data" in result:
-                                st.json(result["data"])
+                                if structured.get("intent") == "list_items" and structured.get("params", {}).get("item_type") == "issues":
+                                    for issue in result["data"]:
+                                        st.write(f"#{issue['number']}: {issue['title']} by {issue['creator']} at {issue['created_at']}")
+                                elif structured.get("intent") == "repo_summary":
+                                    summary = result["data"]
+                                    st.markdown(f"""
+**Repository Summary for {summary['name']}**
+- **Description**: {summary['description']}
+- **Stars**: {summary['stars']}
+- **Forks**: {summary['forks']}
+- **Open Issues**: {summary['open_issues']}
+- **Open PRs**: {summary['open_prs']}
+- **Recent Commits (last 5)**: {summary['recent_commits']}
+- **Topics**: {', '.join(summary['topics'])}
+- **Created**: {summary['created_at']}
+- **Last Updated**: {summary['last_updated']}
+""")
+                                else:
+                                    st.json(result["data"])
     
     with tab2:
         st.subheader("Pull Requests")
