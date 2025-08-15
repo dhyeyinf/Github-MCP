@@ -34,7 +34,6 @@ def run_agent_query(question: str):
 
     elif "recent commit" in q or "commits" in q:
         return "\n".join([f"- {c['sha']} | {c['author']} | {c['date']} | {c['message']}" for c in commits]) or "No recent commits."
-
     elif "describe" in q or "summary" in q or "what is this repo" in q:
         return f"{repo.get('name')} — {repo.get('description') or 'No description provided.'}"
 
