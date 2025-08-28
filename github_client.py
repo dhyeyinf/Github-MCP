@@ -1,5 +1,4 @@
 # github_client.py
-
 import os
 import base64
 import requests
@@ -9,7 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_URL = "https://api.github.com"
-
 # Load the token
 token = os.getenv("GITHUB_TOKEN")
 if not token:
