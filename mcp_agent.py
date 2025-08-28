@@ -1,5 +1,4 @@
 # mcp_agent.py
-
 import json
 
 def load_mcp_context(path="mcp.json"):
