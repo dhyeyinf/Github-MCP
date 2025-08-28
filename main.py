@@ -28,7 +28,7 @@ for repo in repos:
     if user_prompt in repo.lower():
         matched_repo = repo
         break
-
+        
 print(f"\n🌿 Branches in {matched_repo}:")
 branches = list_branches(matched_repo)
 if isinstance(branches, list):
