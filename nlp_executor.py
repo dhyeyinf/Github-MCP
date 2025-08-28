@@ -13,7 +13,7 @@ def mock_llm(prompt, repo_name):
     Returns a structured JSON with intent and parameters.
     """
     prompt = prompt.lower().strip()
-    
+  
     # Patterns for common commands
     patterns = [
         {
